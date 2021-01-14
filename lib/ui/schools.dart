@@ -39,6 +39,9 @@ class _SchoolsState extends State<Schools> {
                       Container(
                         width: MediaQuery.of(context).size.width / 1.8,
                         child: TextFormField(
+                          onChanged: (value) {
+                            print(_searchController.text);
+                          },
                           controller: _searchController,
                           decoration: InputDecoration(
                             hintText: "Search ...",
@@ -88,68 +91,71 @@ class _SchoolsState extends State<Schools> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(top: 1.5),
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height / 1.35,
-                  color: Color(0xffcccccc),
-                  child: StreamBuilder(
-                    stream: FirebaseFirestore.instance
-                        .collection("Users")
-                        .doc(FirebaseAuth.instance.currentUser.uid)
-                        .collection("Schools")
-                        .snapshots(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (!snapshot.hasData) {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                      return ListView(
-                        shrinkWrap: true,
-                        children: snapshot.data.docs.map((document) {
-                          return Container(
-                            // color: Colors.red,
-                            // height: MediaQuery.of(context).size.height,
-                            child: Container(
-                              child: Card(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    ListTile(
-                                      leading: Icon(
-                                        Icons.school,
-                                        color: Colors.blueAccent,
-                                      ),
-                                      title: Text(
-                                          'School Name: ${document['schoolName']}'),
-                                      trailing: IconButton(
-                                        icon: Icon(
-                                          Icons.delete_forever,
-                                          color: Colors.red,
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  SchoolRemoveView(
-                                                schoolID: document.id,
+                    margin: EdgeInsets.only(top: 1.5),
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height / 1.35,
+                    color: Color(0xffcccccc),
+                    child: (_searchController.text == '')
+                        ? StreamBuilder(
+                            stream: FirebaseFirestore.instance
+                                .collection("Users")
+                                .doc(FirebaseAuth.instance.currentUser.uid)
+                                .collection("Schools")
+                                .snapshots(),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (!snapshot.hasData) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                              return ListView(
+                                shrinkWrap: true,
+                                children: snapshot.data.docs.map((document) {
+                                  return Container(
+                                    // color: Colors.red,
+                                    // height: MediaQuery.of(context).size.height,
+                                    child: Container(
+                                      child: Card(
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: <Widget>[
+                                            ListTile(
+                                              leading: Icon(
+                                                Icons.school,
+                                                color: Colors.blueAccent,
+                                              ),
+                                              title: Text(
+                                                  'School Name: ${document['schoolName']}'),
+                                              trailing: IconButton(
+                                                icon: Icon(
+                                                  Icons.delete_forever,
+                                                  color: Colors.red,
+                                                ),
+                                                onPressed: () {
+                                                  Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          SchoolRemoveView(
+                                                        schoolID: document.id,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
                                               ),
                                             ),
-                                          );
-                                        },
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      );
-                    },
-                  ),
-                ),
+                                  );
+                                }).toList(),
+                              );
+                            },
+                          )
+                        : Column(
+                            children: <Widget>[CircularProgressIndicator()],
+                          )),
               ],
             ),
           ),
