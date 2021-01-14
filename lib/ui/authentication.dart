@@ -1,6 +1,7 @@
 import 'package:rc_app/net/flutterfire.dart';
 import 'package:rc_app/ui/home_view.dart';
 import 'package:flutter/material.dart';
+import 'package:rc_app/ui/schools.dart';
 
 class Authentication extends StatefulWidget {
   Authentication({Key key}) : super(key: key);
@@ -109,17 +110,17 @@ class _AuthenticationState extends State<Authentication> {
                 child: MaterialButton(
                   onPressed: () async {
                     bool shouldNavigate =
-                        await register(_emailField.text, _passwordField.text);
+                        await signIn(_emailField.text, _passwordField.text);
                     if (shouldNavigate) {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => HomeView(),
+                          builder: (context) => Schools(),
                         ),
                       );
                     }
                   },
                   child: Text(
-                    "Register",
+                    "Login",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20.0,
@@ -140,17 +141,17 @@ class _AuthenticationState extends State<Authentication> {
                 child: MaterialButton(
                   onPressed: () async {
                     bool shouldNavigate =
-                        await signIn(_emailField.text, _passwordField.text);
+                        await register(_emailField.text, _passwordField.text);
                     if (shouldNavigate) {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => HomeView(),
+                          builder: (context) => Schools(),
                         ),
                       );
                     }
                   },
                   child: Text(
-                    "Login",
+                    "Register",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20.0,

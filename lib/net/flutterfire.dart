@@ -29,26 +29,42 @@ Future<bool> register(String email, String password) async {
   }
 }
 
-Future<bool> addCoin(String id, String amount) async {
+// Add School
+Future<bool> addSchool(String schoolName) async {
   try {
     String uid = FirebaseAuth.instance.currentUser.uid;
-    var value = double.parse(amount);
     DocumentReference documentReference = FirebaseFirestore.instance
         .collection("Users")
         .doc(uid)
-        .collection("Coins")
-        .doc(id);
-    print(documentReference);
+        .collection("Schools")
+        .doc(schoolName);
     FirebaseFirestore.instance.runTransaction((transaction) async {
       DocumentSnapshot snapshot = await transaction.get(documentReference);
       if (!snapshot.exists) {
-        documentReference.set({'Amount': value});
+        documentReference.set({'schoolName': schoolName});
         return true;
       }
-      double newAmount = snapshot.data()['Amount'] + value;
-      transaction.update(documentReference, {"Amount": newAmount});
-      return true;
+      // For updating
+      // transaction.update(documentReference, {"schoolName": schoolName});
+      return false;
     });
+  } catch (e) {
+    return false;
+  }
+}
+
+// Remove school
+Future<bool> removeSchool(String schoolName) async {
+  try {
+    print(schoolName);
+    String uid = FirebaseAuth.instance.currentUser.uid;
+    FirebaseFirestore.instance
+        .collection("Users")
+        .doc(uid)
+        .collection("Schools")
+        .doc(schoolName)
+        .delete();
+    return true;
   } catch (e) {
     return false;
   }
