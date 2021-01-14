@@ -16,6 +16,7 @@ class Schools extends StatefulWidget {
 
 class _SchoolsState extends State<Schools> {
   TextEditingController _searchController = TextEditingController();
+  String searchText = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +41,11 @@ class _SchoolsState extends State<Schools> {
                         width: MediaQuery.of(context).size.width / 1.8,
                         child: TextFormField(
                           onChanged: (value) {
+                            setState(() {
+                              searchText = _searchController.text;
+                            });
                             print(_searchController.text);
+                            print(searchText);
                           },
                           controller: _searchController,
                           decoration: InputDecoration(
@@ -91,71 +96,127 @@ class _SchoolsState extends State<Schools> {
                   ),
                 ),
                 Container(
-                    margin: EdgeInsets.only(top: 1.5),
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height / 1.35,
-                    color: Color(0xffcccccc),
-                    child: (_searchController.text == '')
-                        ? StreamBuilder(
-                            stream: FirebaseFirestore.instance
-                                .collection("Users")
-                                .doc(FirebaseAuth.instance.currentUser.uid)
-                                .collection("Schools")
-                                .snapshots(),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<QuerySnapshot> snapshot) {
-                              if (!snapshot.hasData) {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                              return ListView(
-                                shrinkWrap: true,
-                                children: snapshot.data.docs.map((document) {
-                                  return Container(
-                                    // color: Colors.red,
-                                    // height: MediaQuery.of(context).size.height,
-                                    child: Container(
-                                      child: Card(
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: <Widget>[
-                                            ListTile(
-                                              leading: Icon(
-                                                Icons.school,
-                                                color: Colors.blueAccent,
-                                              ),
-                                              title: Text(
-                                                  'School Name: ${document['schoolName']}'),
-                                              trailing: IconButton(
-                                                icon: Icon(
-                                                  Icons.delete_forever,
-                                                  color: Colors.red,
-                                                ),
-                                                onPressed: () {
-                                                  Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          SchoolRemoveView(
-                                                        schoolID: document.id,
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              ),
+                  margin: EdgeInsets.only(top: 1.5),
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height / 1.35,
+                  color: Color(0xffcccccc),
+                  child: (searchText == '')
+                      ? StreamBuilder(
+                          stream: FirebaseFirestore.instance
+                              .collection("Users")
+                              .doc(FirebaseAuth.instance.currentUser.uid)
+                              .collection("Schools")
+                              .snapshots(),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<QuerySnapshot> snapshot) {
+                            if (!snapshot.hasData) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            return ListView(
+                              shrinkWrap: true,
+                              children: snapshot.data.docs.map((document) {
+                                return Container(
+                                  // color: Colors.red,
+                                  // height: MediaQuery.of(context).size.height,
+                                  child: Container(
+                                    child: Card(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          ListTile(
+                                            leading: Icon(
+                                              Icons.school,
+                                              color: Colors.blueAccent,
                                             ),
-                                          ],
-                                        ),
+                                            title: Text(
+                                                'School Name: ${document['schoolName']}'),
+                                            trailing: IconButton(
+                                              icon: Icon(
+                                                Icons.delete_forever,
+                                                color: Colors.red,
+                                              ),
+                                              onPressed: () {
+                                                Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        SchoolRemoveView(
+                                                      schoolID: document.id,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  );
-                                }).toList(),
+                                  ),
+                                );
+                              }).toList(),
+                            );
+                          },
+                        )
+                      : StreamBuilder(
+                          stream: FirebaseFirestore.instance
+                              .collection("Users")
+                              .doc(FirebaseAuth.instance.currentUser.uid)
+                              .collection("Schools")
+                              .where('schoolName', arrayContains: searchText)
+                              .snapshots(),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<QuerySnapshot> snapshot) {
+                            if (!snapshot.hasData) {
+                              return Center(
+                                child: CircularProgressIndicator(),
                               );
-                            },
-                          )
-                        : Column(
-                            children: <Widget>[CircularProgressIndicator()],
-                          )),
+                            }
+                            return ListView(
+                              shrinkWrap: true,
+                              children: snapshot.data.docs.map((document) {
+                                return Container(
+                                  // color: Colors.red,
+                                  // height: MediaQuery.of(context).size.height,
+                                  child: Container(
+                                    child: Card(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          ListTile(
+                                            leading: Icon(
+                                              Icons.school,
+                                              color: Colors.blueAccent,
+                                            ),
+                                            title: Text(
+                                                'School Name: ${document['schoolName']}'),
+                                            trailing: IconButton(
+                                              icon: Icon(
+                                                Icons.delete_forever,
+                                                color: Colors.red,
+                                              ),
+                                              onPressed: () {
+                                                Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        SchoolRemoveView(
+                                                      schoolID: document.id,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            );
+                          },
+                        ),
+                ),
               ],
             ),
           ),
