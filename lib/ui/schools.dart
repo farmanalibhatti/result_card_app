@@ -44,8 +44,6 @@ class _SchoolsState extends State<Schools> {
                             setState(() {
                               searchText = _searchController.text;
                             });
-                            print(_searchController.text);
-                            print(searchText);
                           },
                           controller: _searchController,
                           decoration: InputDecoration(
@@ -163,7 +161,8 @@ class _SchoolsState extends State<Schools> {
                               .collection("Users")
                               .doc(FirebaseAuth.instance.currentUser.uid)
                               .collection("Schools")
-                              .where('schoolName', arrayContains: searchText)
+                              .where('keywords',
+                                  arrayContains: searchText.toLowerCase())
                               .snapshots(),
                           builder: (BuildContext context,
                               AsyncSnapshot<QuerySnapshot> snapshot) {

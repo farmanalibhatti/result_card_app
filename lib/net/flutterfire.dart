@@ -1,17 +1,28 @@
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:rc_app/utility/dialog.dart';
 
-Future<bool> signIn(String email, String password) async {
+Future<bool> signIn(BuildContext context, String email, String password) async {
   try {
     await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
     return true;
   } catch (e) {
+    if (e.code == 'wrong-password') {
+      showErrorDialog(context, "Pasword Error!", "Invalid Password!");
+    }
+    if (e.code == 'user-not-found') {
+      showErrorDialog(context, "Pasword Error!", "No user found!");
+    }
+    print(e);
+    print(e.code);
     return false;
   }
 }
 
-Future<bool> register(String email, String password) async {
+Future<bool> register(
+    BuildContext context, String email, String password) async {
   try {
     await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
@@ -19,7 +30,11 @@ Future<bool> register(String email, String password) async {
   } on FirebaseAuthException catch (e) {
     if (e.code == 'weak-password') {
       print("The password provided is too weak.");
+      showErrorDialog(
+          context, "Pasword Error!", "The password provided is too weak.");
     } else if (e.code == 'email-already-in-use') {
+      showErrorDialog(
+          context, "Email Error!", "Account already exists for that email!");
       print("Account already exists for that email.");
     }
     return false;
@@ -41,7 +56,11 @@ Future<bool> addSchool(String schoolName) async {
     FirebaseFirestore.instance.runTransaction((transaction) async {
       DocumentSnapshot snapshot = await transaction.get(documentReference);
       if (!snapshot.exists) {
-        documentReference.set({'schoolName': schoolName});
+        List<String> keywords = [];
+        for (int i = 0; i <= schoolName.length; i++) {
+          keywords.add(schoolName.substring(0, i).toLowerCase());
+        }
+        documentReference.set({'schoolName': schoolName, 'keywords': keywords});
         return true;
       }
       // For updating
@@ -56,7 +75,6 @@ Future<bool> addSchool(String schoolName) async {
 // Remove school
 Future<bool> removeSchool(String schoolName) async {
   try {
-    print(schoolName);
     String uid = FirebaseAuth.instance.currentUser.uid;
     FirebaseFirestore.instance
         .collection("Users")
