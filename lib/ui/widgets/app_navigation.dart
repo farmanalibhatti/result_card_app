@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rc_app/ui/schools.dart';
+import 'package:rc_app/ui/profile.dart';
 import 'package:rc_app/ui/authentication.dart';
 
 class AppNavigation extends StatefulWidget {
@@ -50,11 +51,15 @@ class _AppNavigationState extends State<AppNavigation> {
       switch (index) {
         case 0:
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => Authentication()));
+              .push(MaterialPageRoute(builder: (context) => Schools()));
           break;
         case 1:
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => Schools()));
+          break;
+        case 3:
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => Profile()));
           break;
         default:
           Navigator.of(context)

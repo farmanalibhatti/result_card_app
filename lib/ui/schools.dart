@@ -224,20 +224,6 @@ class _SchoolsState extends State<Schools> {
       bottomNavigationBar: AppNavigation(
         selected: 1,
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     Navigator.of(context).push(
-      //       MaterialPageRoute(
-      //         builder: (context) => SchoolAddView(),
-      //       ),
-      //     );
-      //   },
-      //   child: Icon(
-      //     Icons.add,
-      //     color: Colors.white,
-      //   ),
-      //   backgroundColor: Colors.blue,
-      // ),
     );
   }
 }
